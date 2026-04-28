@@ -13,8 +13,8 @@ from langchain_deepseek.chat_models import ChatDeepSeek
 from langchain_ollama.chat_models import ChatOllama
 from langchain_openai.chat_models import ChatOpenAI
 
-from src.common.pydantic_helper import build_structured_prompt, parse_structured_output
-from src.common.logger import get_logger
+from common.pydantic_helper import build_structured_prompt, parse_structured_output
+from common.logger import get_logger
 
 logger = get_logger("unified_llm", icon="🧠")
 

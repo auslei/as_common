@@ -21,9 +21,9 @@ from langchain_ollama.chat_models import ChatOllama
 from langchain_openai.chat_models import ChatOpenAI
 from pydantic import SecretStr
 
-from src.common.logger import get_logger
-from src.common.LLMProvider import LLMSettings, LLAMA_CPP_MODEL_PATHS
-from src.common.ml_utils import get_device
+from common.logger import get_logger
+from common.LLMProvider import LLMSettings, LLAMA_CPP_MODEL_PATHS
+from common.ml_utils import get_device
 
 load_dotenv()
 
@@ -113,7 +113,7 @@ def get_llm(llm_setting: LLMSettings) -> Any:
     Returns:
         Initialized UnifiedChatModel instance
     """
-    from src.common.unified_llm import UnifiedChatModel
+    from common.unified_llm import UnifiedChatModel
     
     return UnifiedChatModel(
         provider=llm_setting.provider,

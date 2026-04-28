@@ -2,7 +2,7 @@
 Shared serialized job queue for InvestorIQ FastAPI microservices.
 
 Usage pattern:
-    from src.common.job_queue import JobQueue, JobRecord, JobEnqueueResponse
+    from common.job_queue import JobQueue, JobRecord, JobEnqueueResponse
 
     job_queue = JobQueue("my_service", logger)
 
@@ -29,7 +29,7 @@ from uuid import uuid4
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from src.common.logger import get_logger
+from common.logger import get_logger
 
 _module_logger = get_logger("job_queue", icon="⚙️")
 

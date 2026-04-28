@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from src.common.logger import get_logger
+from common.logger import get_logger
 
 logger = get_logger("download_utils", icon="⬇️")
 

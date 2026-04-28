@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import SystemMessage
 import json
-from src.common.logger import get_logger
+from common.logger import get_logger
 
 logger = get_logger("pydantic_helper")
 
