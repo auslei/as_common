@@ -21,9 +21,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-ml = [
-    "torch>=2.0.0",
-]
+ml = []
 media = [
     "yt-dlp>=2024.0.0",
 ]

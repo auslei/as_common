@@ -82,14 +82,10 @@ def get_current_date() -> str:
 
 
 def clear_gpu_memory():
-    """Clear CUDA cache and run garbage collection to free up VRAM."""
+    """Clear GPU cache and run garbage collection to free up VRAM."""
     import gc
-    try:
-        if get_device() == 'cuda':
-            import torch
-            torch.cuda.empty_cache()
-    except Exception:
-        pass
+    # Without torch, we don't have a direct way to trigger cache clearing 
+    # for CUDA in general, but garbage collection still helps.
     gc.collect()
 
 
