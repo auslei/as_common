@@ -156,7 +156,8 @@ class UnifiedChatModel(BaseChatModel):
                 temperature=0.0 if temperature is None else temperature,
             )
         elif provider == "ollama":
-            base_url = os.getenv("OLLAMA_BASE_URL") or os.getenv("OLLAMA_API_URL", "http://localhost:11434")
+            base_url = os.getenv("OLLAMA_BASE_URL") or os.getenv("OLLAMA_URL") or os.getenv("OLLAMA_API_URL", "http://localhost:11434")
+            logger.info(f"Using Ollama base URL: {base_url}")
             kwargs = {
                 "model": model_name,
                 "temperature": 0.0 if temperature is None else temperature,
