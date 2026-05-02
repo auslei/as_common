@@ -91,7 +91,7 @@ def clear_gpu_memory():
 
 def unload_ollama_model(model_name: str):
     """Unload a specific model from Ollama memory to free up VRAM."""
-    base_url = os.getenv("OLLAMA_BASE_URL") or os.getenv("OLLAMA_API_URL", "http://localhost:11434")
+    base_url = os.getenv("OLLAMA_BASE_URL") or os.getenv("OLLAMA_URL") or os.getenv("OLLAMA_API_URL", "http://localhost:11434")
     try:
         logger.info(f"Requesting Ollama to unload model: {model_name}")
         # Sending a generate request with keep_alive=0 unloads the model immediately
@@ -175,7 +175,7 @@ def get_llm_legacy(llm_setting: LLMSettings) -> LLMType:
             kwargs["reasoning_effort"] = "low"
         llm = ChatOpenAI(**kwargs)
     elif provider == "ollama":
-        base_url = os.getenv("OLLAMA_BASE_URL") or os.getenv("OLLAMA_API_URL", "http://localhost:11434")
+        base_url = os.getenv("OLLAMA_BASE_URL") or os.getenv("OLLAMA_URL") or os.getenv("OLLAMA_API_URL", "http://localhost:11434")
         kwargs = {
             "model": model_name,
             "temperature": 0.0 if temperature is None else temperature,
