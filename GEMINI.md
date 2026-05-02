@@ -1,93 +1,50 @@
 # Common Module (ic-common)
 
-This project contains shared utilities and core abstractions for the Investor-IQ ecosystem. It is designed to be a lightweight, stable, and dependency-efficient library used by multiple services (agents, extraction services, etc.).
+Shared utilities and core abstractions for the Investor-IQ ecosystem — a lightweight, stable, dependency-efficient library used by multiple services (agents, extraction services, etc.).
 
-## Project Overview
+See **GLOBAL_STANDARDS.md** for coding standards, design principles, and workflow rules.
 
-- **Core Purpose:** Provides a unified interface for LLM providers, job queuing, structured data extraction, and common utility functions (ML, File, Download).
-- **Primary Technologies:**
-  - **Python:** >= 3.12
-  - **LLM Integration:** LangChain (Core, Community, Ollama, OpenAI, DeepSeek)
-  - **API/Concurrency:** FastAPI
-  - **Data Validation:** Pydantic v2
-  - **Package Management:** [uv](https://github.com/astral-sh/uv)
+## Core Purpose
 
-## Building and Running
+- **Unified LLM Interface**: Multi-provider support via `UnifiedChatModel` (Ollama, OpenAI, DeepSeek, LlamaCpp, LM Studio)
+- **Job Queuing**: FastAPI-integrated serialized queue for long-running GPU/CPU tasks (`job_queue.py`)
+- **Structured Extraction**: Pydantic-based LLM output parsing with multi-stage recovery (`pydantic_helper.py`)
+- **Utilities**: ML device detection, file ops, document conversion, media downloading, logging
 
-### Prerequisites
-- Python 3.12+
-- `uv` (recommended)
+## Commands
 
-### Installation
-From the `src/common` directory:
-
-**Core only:**
 ```bash
-uv sync
+uv sync                        # install core deps
+uv sync --extra all            # install with ml/media/pdf extras
+uv run pytest                  # run unit tests (tests/)
+uv run pytest tests/manual/    # run integration tests (require live LLM providers)
+uv run black src/common tests  # format
+uv run ruff check src/common tests  # lint
 ```
 
-**With optional features:**
-```bash
-uv sync --extra ml --extra media --extra pdf
-# Or all at once
-uv sync --extra all
-```
+Set `PYTHONPATH=.` when running scripts directly.
 
-### Running Tests
-Automated tests are located in `src/common/tests`.
-```bash
-uv run pytest
-```
-Manual/Integration tests can be found in `src/common/tests/manual`.
+## Module Reference
 
-## Development Standards (from GLOBAL_STANDARDS.md)
+See `src/common/MODULE_CONTEXT.md` for the full public API of each module.
 
-### Core Behaviour
-- Use context7 MCP to retrieve code references; ensure you use the correct version for libraries.
-- If anything is unclear or ambiguous, **ask the user** before acting.
-- Propose changes first; implement only after explicit user approval.
-- Please do not modify/reference source code under z_archive.
+Key modules:
 
-### Modules & Architecture
-- **Isolation:** Each module must define clear I/O specs and run independently.
-- **Commonality:** Shared logic lives in `src/common`.
-- **State:** In graph-based workflows, always verify the `State` schema before modifying node logic.
-- **Coupling:** High cohesion, low coupling. Interact only via public APIs.
-- **File Size:** Avoid large files (>30KB). Refactor into smaller modules or sub-packages if complexity grows, to ensure compatibility with license and obfuscation tools.
-- **Packages:** Each package must design clear I/O specs and also webservice intended to be used as a microservice.
+- `unified_llm.py` — `UnifiedChatModel`: LangChain `BaseChatModel`, lazy init, structured output via `schema=`, thinking toggle via `thinking=`
+- `llm_utils.py` — `get_llm()` factory, message content stripping, token counting, Ollama VRAM release
+- `LLMProvider.py` — `LLMSettings`, `LLMProvider` enums, `LLAMA_CPP_MODEL_PATHS`
+- `pydantic_helper.py` — `build_structured_prompt()`, `parse_structured_output()` with LLM repair fallback
+- `job_queue.py` — serialized FIFO queue, deduplication, `make_router()` for FastAPI
+- `config.py` — singleton `config` from `config.yaml` via Pydantic
+- `logger.py` — `get_logger(name, icon)` with Rich console; `LOG__TO_FILE=true` persists to `logs/`
+- `models.py` — shared domain models (`ExtractionResult`, `ProjectMetadata`)
+- `ml_utils.py` — `get_device()`, `get_gpu_usage()`, `millisec_to_time()`
+- `docker_utils.py` — `resolve_project_dir()` for host/container path consistency
+- `document_utils.py` — Markdown-to-PDF via Pandoc
+- `download_utils.py` — YouTube/media download with caching via yt-dlp
 
-### Coding Standards
-- **Environment:** Always use `uv` for dependency management (`uv add`, `uv lock`). Ensure `PYTHONPATH` is set to the project root when running scripts or tests.
-- **Style:** Simple, concise, readable. Use `snake_case` (vars/functions) and `PascalCase` (classes).
-- **Tooling:** Follow project formatting (Black/Ruff). Keep imports alphabetized and minimal.
-- **Type Safety:** Use Python type hints for all function signatures. Use Pydantic models (see `src/common/pydantic_helper.py`) for complex data structures and tool arguments.
-- **AI Tools:** Use descriptive docstrings for all tool definitions, as these are used as metadata for the LLM.
-- **Comments:** Short inline comments only where intent is non-obvious.
+## Directory Structure
 
-### Design Principles
-- Prefer straightforward logic over unnecessary wrappers/abstractions.
-- Expose functionality via Python APIs, not shell commands unless mandatory.
-- **Zero Side Effects:** Functions should be deterministic where possible.
-
-### Error Handling & Logging
-- Raise clear, actionable errors; avoid raw tracebacks.
-- **Logging:**
-    - Use the shared logger from `src/common/logger.py` instead of `print()` or the standard `logging` module for internal execution tracking.
-    - Logging (level info) should be done sufficiently before major steps, to make it easier for debugging.
-
-### Testing & Quality
-- Update/add tests for every behavioral change.
-- **Location:** Place tests within the corresponding module's directory (e.g., `src/[module_name]/tests/`).
-- Prefer small, deterministic unit tests.
-- Verify changes against existing test suites before declaring "done."
-
-### Workflow
-- **Plan:** Explain reasoning and impact before coding.
-- **Minimalism:** Modify only what the user requests.
-- **Cleanup:** Keep `dev/` and `docs/` updated; remove obsolete files immediately. Update local `MODULE_CONTEXT.md` files within modules when their APIs or responsibilities change.
-- **Structure:** Follow conventions: `examples/`, `tests/`, `dev/`, `docs/`, `src/`.
-
-## Directory Structure (Core)
-- `src/common/`: Core source code.
-- `src/common/tests/`: Unit and functional tests.
-- `src/common/tests/manual/`: Integration tests requiring active LLM providers.
+- `src/common/` — source code
+- `tests/` — unit tests
+- `tests/manual/` — integration tests (require active LLM providers)

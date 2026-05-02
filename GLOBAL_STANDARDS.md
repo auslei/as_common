@@ -2,10 +2,8 @@
 
 ### Core Behaviour
 
-- Use context7 MCP to retrieve code references; ensure you use the correct version for libraries.
 - If anything is unclear or ambiguous, **ask the user** before acting.
 - Propose changes first; implement only after explicit user approval.
-- Please do not modify/reference source code under z_archive.
 
 ### Modules & Architecture
 
@@ -41,7 +39,7 @@
 ### Testing & Quality
 
 - Update/add tests for every behavioral change.
-- **Location:** Place tests within the corresponding module's directory (e.g., `src/[module_name]/tests/`).
+- **Location:** Unit tests live in `tests/` at the repo root; manual/integration tests in `tests/manual/`.
 - Prefer small, deterministic unit tests.
 - Verify changes against existing test suites before declaring "done."
 

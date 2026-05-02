@@ -127,6 +127,84 @@ async def test_trimming(job_queue):
         assert job_queue.get_job(j3.job_id) is not None
         await job_queue.stop()
 
+@pytest.mark.asyncio
+async def test_job_failure_on_exception(job_queue):
+    async def run_fn(job):
+        raise RuntimeError("something went wrong")
+
+    await job_queue.start(run_fn)
+    job = job_queue.enqueue("failing_job", {})
+
+    for _ in range(20):
+        if job.status in ("completed", "failed"):
+            break
+        await asyncio.sleep(0.05)
+
+    assert job.status == "failed"
+    assert "something went wrong" in job.error
+    await job_queue.stop()
+
+
+@pytest.mark.asyncio
+async def test_job_timestamps_set(job_queue):
+    async def run_fn(job):
+        return "done"
+
+    await job_queue.start(run_fn)
+    job = job_queue.enqueue("ts_job", {})
+    assert job.created_at is not None
+
+    for _ in range(20):
+        if job.status == "completed":
+            break
+        await asyncio.sleep(0.05)
+
+    assert job.started_at is not None
+    assert job.finished_at is not None
+    assert job.finished_at >= job.started_at
+    await job_queue.stop()
+
+
+@pytest.mark.asyncio
+async def test_cancel_nonexistent_job_returns_false(job_queue):
+    assert job_queue.cancel_job("nonexistent-id-xyz") is False
+
+
+@pytest.mark.asyncio
+async def test_get_queue_snapshot(job_queue):
+    job1 = job_queue.enqueue("j1", {"a": 1})
+    job2 = job_queue.enqueue("j2", {"b": 2})
+
+    snapshot = job_queue.get_queue_snapshot()
+    assert len(snapshot) == 2
+    ids = [j["job_id"] for j in snapshot]
+    assert job1.job_id in ids
+    assert job2.job_id in ids
+
+
+@pytest.mark.asyncio
+async def test_job_counts_reflects_state(job_queue):
+    job_queue.enqueue("j1", {"i": 1})
+    job_queue.enqueue("j2", {"i": 2})
+
+    counts = job_queue.job_counts()
+    assert counts["queued"] == 2
+    assert counts["running"] == 0
+    assert counts["completed"] == 0
+    assert counts["failed"] == 0
+
+
+@pytest.mark.asyncio
+async def test_get_job_position_multiple_queued(job_queue):
+    j1 = job_queue.enqueue("j1", {"i": 1})
+    j2 = job_queue.enqueue("j2", {"i": 2})
+    j3 = job_queue.enqueue("j3", {"i": 3})
+
+    assert job_queue.get_job_position(j1.job_id) == 1
+    assert job_queue.get_job_position(j2.job_id) == 2
+    assert job_queue.get_job_position(j3.job_id) == 3
+
+
 from unittest.mock import patch
 
 @pytest.mark.asyncio

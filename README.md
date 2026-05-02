@@ -19,10 +19,6 @@ This project contains shared utilities and core abstractions for the Investor-IQ
 
 From the project root:
 
-```bash
-cd src/common
-```
-
 **Core only:**
 ```bash
 uv sync
@@ -42,14 +38,14 @@ uv sync --extra all
 uv run pytest
 
 # Manual/Integration tests
-uv run pytest src/common/tests/manual
+uv run pytest tests/manual
 ```
 
 ## Directory Structure
 
 - `src/common/`: Core source code.
-- `src/common/tests/`: Unit and functional tests.
-- `src/common/tests/manual/`: Integration tests requiring active LLM providers.
+- `tests/`: Unit and functional tests.
+- `tests/manual/`: Integration tests requiring active LLM providers.
 
 ## Development
 

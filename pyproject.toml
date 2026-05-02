@@ -56,3 +56,6 @@ asyncio_mode = "auto"
 pythonpath = ["."]
 testpaths = ["tests"]
 norecursedirs = ["tests/manual"]
+
+[tool.coverage.run]
+source = ["src"]
