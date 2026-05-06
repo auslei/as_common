@@ -36,7 +36,7 @@ class ChatLLMConfig(BaseModel):
     concurrency: int = Field(default=2)
     
     # Specialized roles for performance optimization
-    router: Optional[LLMConfig] = None
+    chat: Optional[LLMConfig] = None
     generator: Optional[LLMConfig] = None
 
 class SummarizationThinkingConfig(BaseModel):
