@@ -95,7 +95,14 @@ class AnalyticsPipelineConfig(BaseModel):
 ScorecardConfig = AnalyticsPipelineConfig
 AnalyticsConfig = AnalyticsPipelineConfig
 
-class VectorDBConfig(BaseModel):    
+class QueryToolConfig(BaseModel):
+    mmr: bool = Field(default=True)
+    diversity: float = Field(default=0.6)
+    n_results: int = Field(default=10)
+    rerank: bool = Field(default=False)
+    condense: bool = Field(default=False)
+
+class VectorDBConfig(BaseModel):
     qdrant: Optional[QdrantConfig] = Field(default_factory=QdrantConfig)  # Qdrant connection config
     embedding_model: str = Field(default="BAAI/bge-m3")
     rerank_model: str = Field(default="BAAI/bge-reranker-v2-m3")
@@ -134,6 +141,7 @@ class AppConfig(BaseModel):
     chat: ChatConfig = Field(default_factory=ChatConfig)
     tenants: List[UserConfig] = Field(default_factory=list, alias="users_legacy")
     
+    query_tool: QueryToolConfig = Field(default_factory=QueryToolConfig)
     extraction: Optional[ExtractionConfig] = Field(default=None)
     analytics_pipeline: AnalyticsPipelineConfig = Field(default_factory=AnalyticsPipelineConfig)
     # Legacy keys — populated from config.yaml if present, for backward compatibility
