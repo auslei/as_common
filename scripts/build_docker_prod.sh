@@ -152,7 +152,7 @@ for PLATFORM in "${PLATFORMS[@]}"; do
         --platform "${PLATFORM}" \
         --target "${BUILD_TARGET}" \
         -f "${DOCKERFILE}" \
-        "${BUILD_ARGS[@]}" \
+        "${BUILD_ARGS[@]+"${BUILD_ARGS[@]}"}" \
         -t "${IMAGE_TAG}" \
         --output "type=docker,dest=${TAR_PATH}" \
         .
@@ -175,7 +175,7 @@ echo "Loading ${NATIVE_TAR}..."
 docker load -i "${NATIVE_TAR}"
 
 # Do NOT use --rm so we can retrieve logs after a crash.
-CONTAINER_ID=$(docker run -d "${GPU_FLAGS[@]}" "${IMAGE_TAG}")
+CONTAINER_ID=$(docker run -d "${GPU_FLAGS[@]+"${GPU_FLAGS[@]}"}" "${IMAGE_TAG}")
 
 echo "Waiting 5s for container ${CONTAINER_ID} to initialise..."
 sleep 5
