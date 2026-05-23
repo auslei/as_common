@@ -3,7 +3,7 @@ import sys
 import yaml
 import os
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict
 from pydantic import BaseModel, Field
 
 # Determine config path relative to the caller (assumed project root)
@@ -36,7 +36,7 @@ class ChatLLMConfig(BaseModel):
     concurrency: int = Field(default=2)
     
     # Specialized roles for performance optimization
-    router: Optional[LLMConfig] = None
+    chat: Optional[LLMConfig] = None
     generator: Optional[LLMConfig] = None
 
 class SummarizationThinkingConfig(BaseModel):
@@ -70,13 +70,6 @@ class CoreAppConfig(BaseModel):
     templates: Dict[str, str] = Field(default_factory=dict) # Legacy
     summarization: SummarizationConfig = Field(default_factory=SummarizationConfig)
 
-class QdrantConfig(BaseModel):
-    """Qdrant vector database connection configuration."""
-    url: Optional[str] = Field(default=None)  # Server endpoint (e.g., http://qdrant:6333)
-    path: Optional[str] = Field(default=None)  # Local file storage (e.g., data/vectordb)
-    location: Optional[str] = Field(default=None)  # In-memory storage (":memory:")
-    api_key: Optional[str] = Field(default=None)  # Optional API authentication
-
 class ExtractionConfig(BaseModel):
     ocr_model: str
     transcribe_model: str
@@ -94,19 +87,6 @@ class AnalyticsPipelineConfig(BaseModel):
 # cfg.analytics keeps working until those callers are updated.
 ScorecardConfig = AnalyticsPipelineConfig
 AnalyticsConfig = AnalyticsPipelineConfig
-
-class VectorDBConfig(BaseModel):    
-    qdrant: Optional[QdrantConfig] = Field(default_factory=QdrantConfig)  # Qdrant connection config
-    embedding_model: str = Field(default="BAAI/bge-m3")
-    rerank_model: str = Field(default="BAAI/bge-reranker-v2-m3")
-    # Legacy flat fields for backward compatibility (deprecated)
-    qdrant_url: Optional[str] = Field(default=None)
-    qdrant_path: Optional[str] = Field(default=None)
-    max_chunk_size: int = Field(default=1000)
-    chunk_overlap: int = Field(default=200)
-    transcript_window_seconds: int = Field(default=60)
-    transcript_overlap_seconds: int = Field(default=15)
-    llm: Optional[LLMConfig] = Field(default=None)
 
 class ReportingConfig(BaseModel):
     default_template: str = Field(default="original_lite.json")
@@ -139,7 +119,6 @@ class AppConfig(BaseModel):
     # Legacy keys — populated from config.yaml if present, for backward compatibility
     scorecard: Optional[AnalyticsPipelineConfig] = Field(default=None)
     analytics: Optional[AnalyticsPipelineConfig] = Field(default=None)
-    vectordb: VectorDBConfig = Field(default_factory=VectorDBConfig)
     reporting: ReportingConfig = Field(default_factory=ReportingConfig)
     podcast: PodcastConfig = Field(default_factory=PodcastConfig)
 
