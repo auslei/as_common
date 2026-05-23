@@ -72,6 +72,7 @@ Key variables for development:
 - `OPENAI_API_KEY` — required for OpenAI models
 - `DEEPSEEK_API_KEY` — required for DeepSeek models
 - `LMSTUDIO_BASE_URL` — LM Studio endpoint (default: `http://localhost:1234/v1`)
+- `OPENROUTER_API_KEY` — required for OpenRouter models
 - `FORCE_DEVICE` — override device detection (cuda/mps/cpu)
 
 ## Architecture & Core Modules
@@ -102,7 +103,7 @@ src/common/
 
 The `UnifiedChatModel` class is a LangChain-compatible `BaseChatModel` that abstracts all provider differences:
 
-- **Supported Providers**: ollama, openai, deepseek, llama_cpp, lms (LM Studio)
+- **Supported Providers**: ollama, openai, deepseek, llama_cpp, lms (LM Studio), openrouter
 - **Lazy Initialization**: Models are cached and reused via `_RAW_LLM_CACHE` to avoid re-initialization
 - **Dynamic Parameters**: `invoke()`, `ainvoke()`, `stream()`, `astream()` methods accept optional `thinking` override at call-time for reasoning model toggling
 - **Structured Output**: Pass `schema=MyPydanticModel` to any invoke method for automatic JSON schema injection, multi-stage parsing, and LLM repair

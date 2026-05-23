@@ -1,60 +1,73 @@
 # Investor-IQ Common Module (ic-common)
 
-This project contains shared utilities and core abstractions for the Investor-IQ ecosystem. It is designed to be a lightweight, stable, and dependency-efficient library used by multiple services (agents, extraction services, etc.).
+Shared utilities and core abstractions for the Investor-IQ ecosystem. A lightweight, stable foundation used by multiple microservices (agents, extraction services, etc.).
 
 ## Features
 
-- **Unified LLM Interface:** Support for LangChain, Ollama, OpenAI, DeepSeek, and more.
-- **Job Queuing:** Robust job management and processing.
-- **Structured Extraction:** Tools for extracting structured data from documents.
-- **Utilities:** Common helpers for ML, file operations, downloading, and more.
+- **Unified LLM Interface:** Multi-provider support — Ollama, OpenAI, DeepSeek, LM Studio, OpenRouter, LlamaCpp.
+- **Job Queuing:** FastAPI-integrated serialized queue for long-running GPU/CPU tasks.
+- **Structured Extraction:** Pydantic-based schema validation and LLM output parsing with automatic repair.
+- **Utilities:** Common helpers for ML, file operations, document conversion, media downloading, and more.
 
 ## Quick Start
 
 ### Prerequisites
 - Python 3.12+
-- [uv](https://github.com/astral-sh/uv) (recommended for dependency management)
+- [uv](https://github.com/astral-sh/uv)
 
 ### Installation
 
-From the project root:
-
-**Core only:**
 ```bash
+# Core only
 uv sync
-```
 
-**With optional features:**
-```bash
+# With optional features
 uv sync --extra all
-# Or specifically:
-# uv sync --extra ml --extra media --extra pdf
+# Or individually: --extra ml  --extra media  --extra pdf
 ```
 
 ### Running Tests
 
 ```bash
-# Unit tests
-uv run pytest
-
-# Manual/Integration tests
-uv run pytest tests/manual
+uv run pytest                  # unit tests
+uv run pytest tests/manual/    # integration tests (requires live LLM providers)
+uv run pytest --cov            # with coverage report
 ```
 
 ## Directory Structure
 
-- `src/common/`: Core source code.
-- `tests/`: Unit and functional tests.
-- `tests/manual/`: Integration tests requiring active LLM providers.
+```
+src/common/         # Core source code
+tests/              # Unit tests
+tests/manual/       # Integration tests (not run by default)
+sync_common.py      # Sync script for sibling ic_* projects
+Makefile            # Common dev targets
+```
+
+## Syncing to Sibling Projects
+
+`ic_common` is shared by copying `src/common/` directly into each sibling `ic_*` project's `common/` directory. After making changes, run:
+
+```bash
+make sync
+```
+
+This scans `../ic_*/` for any project with a `common/` directory and:
+1. Copies updated `.py` files and `MODULE_CONTEXT.md`
+2. Adds any new dependencies to each project's `pyproject.toml`
+
+Then run `uv sync` in each updated project to install new dependencies.
 
 ## Development
 
-This project follows the standards defined in `GLOBAL_STANDARDS.md` and `GEMINI.md`.
+```bash
+make sync      # push changes to sibling ic_* projects
+make test      # run unit tests
+make lint      # ruff check
+make format    # black format
+```
 
-- **Dependency Management:** Always use `uv`.
-- **Formatting:** Follow Black/Ruff standards.
-- **Type Safety:** Use Python type hints for all function signatures.
-- **Logging:** Use the shared logger from `src/common/logger.py`.
+Follows the standards in `GLOBAL_STANDARDS.md`. Always use `uv` for dependency management, type hints on all function signatures, and `get_logger()` from `logger.py` for logging.
 
 ## License
 

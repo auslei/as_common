@@ -155,6 +155,16 @@ class UnifiedChatModel(BaseChatModel):
                 base_url=base_url,
                 temperature=0.0 if temperature is None else temperature,
             )
+        elif provider == "openrouter":
+            api_key = os.getenv("OPENROUTER_API_KEY")
+            if not api_key:
+                raise ValueError("OPENROUTER_API_KEY environment variable not set")
+            llm = ChatOpenAI(
+                model=model_name,
+                api_key=SecretStr(api_key),
+                base_url="https://openrouter.ai/api/v1",
+                temperature=0.0 if temperature is None else temperature,
+            )
         elif provider == "ollama":
             base_url = os.getenv("OLLAMA_BASE_URL") or os.getenv("OLLAMA_URL") or os.getenv("OLLAMA_API_URL", "http://localhost:11434")
             logger.info(f"Using Ollama base URL: {base_url}")
