@@ -119,3 +119,19 @@ def suppress_http_logs(paths: list[str] = ["/health", "/jobs", "/api/admin/jobs"
     uvicorn_logger = logging.getLogger("uvicorn.access")
     for path in paths:
         uvicorn_logger.addFilter(EndpointFilter(path))
+
+
+class _LogBufferHandler(logging.Handler):
+    """In-memory handler that accumulates formatted log lines for API exposure."""
+    def __init__(self, capacity: int = 1000) -> None:
+        super().__init__()
+        self.buffer: list[str] = []
+        self._capacity = capacity
+
+    def emit(self, record: logging.LogRecord) -> None:
+        self.buffer.append(self.format(record))
+        if len(self.buffer) > self._capacity:
+            self.buffer.pop(0)
+
+
+log_buffer = _LogBufferHandler()
