@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from src.common.models import ProjectMetadata, get_all_sectors
+from src.common.models import ProjectMetadata
 
 
 class TestProjectMetadata:
@@ -11,17 +11,17 @@ class TestProjectMetadata:
         assert m.project_name == "TestProject"
         assert m.sector == "Technology"
 
-    def test_default_language_is_zh(self):
+    def test_default_language_is_en(self):
         m = ProjectMetadata(project_name="P", sector="Finance")
-        assert m.language == "zh"
+        assert m.language == "en"
 
     def test_default_description_is_empty(self):
         m = ProjectMetadata(project_name="P", sector="Finance")
         assert m.description == ""
 
     def test_explicit_language(self):
-        m = ProjectMetadata(project_name="P", sector="Finance", language="en")
-        assert m.language == "en"
+        m = ProjectMetadata(project_name="P", sector="Finance", language="zh")
+        assert m.language == "zh"
 
     def test_save_creates_project_json(self, tmp_path):
         m = ProjectMetadata(project_name="SaveTest", sector="Energy")
@@ -52,7 +52,6 @@ class TestProjectMetadata:
         assert loaded.project_name == "my_project"
 
     def test_load_strips_trailing_separator(self, tmp_path):
-        # Folder path with trailing slash should still extract correct name
         folder = tmp_path / "proj_a"
         folder.mkdir()
         loaded = ProjectMetadata.load_from_folder(str(folder) + "/")
@@ -70,22 +69,3 @@ class TestProjectMetadata:
         m.save_to_folder(str(tmp_path))
         data = json.loads((tmp_path / "project.json").read_text())
         assert data["project_name"] == "JsonTest"
-
-
-class TestGetAllSectors:
-
-    def test_returns_list_from_file(self, tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
-        (tmp_path / "data").mkdir()
-        (tmp_path / "data" / "sectors.json").write_text(
-            json.dumps(["Technology", "Finance", "Healthcare"])
-        )
-        result = get_all_sectors()
-        assert isinstance(result, list)
-        assert "Technology" in result
-        assert len(result) == 3
-
-    def test_returns_empty_list_when_file_missing(self, tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
-        result = get_all_sectors()
-        assert result == []

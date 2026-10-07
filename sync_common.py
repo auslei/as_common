@@ -14,6 +14,8 @@ from pathlib import Path
 
 _SYNC_EXTENSIONS = {".py", ".md"}
 _SKIP_DIRS = {"__pycache__"}
+# These files are intentionally excluded — each project defines its own versions
+_SKIP_FILES = {"config.py", "utils.py", "models.py"}
 
 
 def pkg_name(dep: str) -> str:
@@ -26,6 +28,8 @@ def sync_files(src_dir: Path, dst_dir: Path) -> int:
     updated = 0
     for src in sorted(src_dir.iterdir()):
         if src.name in _SKIP_DIRS or src.is_dir():
+            continue
+        if src.name in _SKIP_FILES:
             continue
         if src.suffix not in _SYNC_EXTENSIONS:
             continue

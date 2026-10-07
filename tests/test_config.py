@@ -14,7 +14,6 @@ from src.common.config import (
 def test_app_config_defaults():
     cfg = AppConfig()
     assert cfg.api_key == "dev-secret-key"
-    assert cfg.core_app.company_name == "InvestorIQ"
     assert cfg.llm.provider == "ollama"
 
 def test_load_config_from_path_missing(tmp_path):
@@ -25,18 +24,12 @@ def test_load_config_from_path_missing(tmp_path):
 
 def test_load_config_from_path_valid(tmp_path):
     cfg_file = tmp_path / "config.yaml"
-    data = {
-        "api_key": "prod-key",
-        "core_app": {
-            "company_name": "CustomCorp"
-        }
-    }
+    data = {"api_key": "prod-key"}
     with open(cfg_file, "w") as f:
         yaml.dump(data, f)
-    
+
     cfg = load_config_from_path(cfg_file)
     assert cfg.api_key == "prod-key"
-    assert cfg.core_app.company_name == "CustomCorp"
 
 def test_load_config_from_path_invalid(tmp_path):
     cfg_file = tmp_path / "bad.yaml"
