@@ -1,4 +1,4 @@
-# Investor-IQ Common Module (ic-common)
+# Investor-IQ Common Module (as-common)
 
 Shared utilities and core abstractions for the Investor-IQ ecosystem. A lightweight, stable foundation used by multiple microservices (agents, extraction services, etc.).
 
@@ -40,19 +40,19 @@ uv run pytest --cov            # with coverage report
 src/common/         # Core source code
 tests/              # Unit tests
 tests/manual/       # Integration tests (not run by default)
-sync_common.py      # Sync script for sibling ic_* projects
+sync_common.py      # Sync script for sibling as_* projects
 Makefile            # Common dev targets
 ```
 
 ## Syncing to Sibling Projects
 
-`ic_common` is shared by copying `src/common/` directly into each sibling `ic_*` project's `common/` directory. After making changes, run:
+`as_common` is shared by copying `src/common/` directly into each sibling `as_*` project's `common/` directory. After making changes, run:
 
 ```bash
 make sync
 ```
 
-This scans `../ic_*/` for any project with a `common/` directory and:
+This scans `../as_*/` for any project with a `common/` directory and:
 1. Copies updated `.py` files and `MODULE_CONTEXT.md`
 2. Adds any new dependencies to each project's `pyproject.toml`
 
@@ -61,7 +61,7 @@ Then run `uv sync` in each updated project to install new dependencies.
 ## Development
 
 ```bash
-make sync      # push changes to sibling ic_* projects
+make sync      # push changes to sibling as_* projects
 make test      # run unit tests
 make lint      # ruff check
 make format    # black format

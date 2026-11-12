@@ -1,4 +1,4 @@
-# Common Module (ic-common)
+# Common Module (as-common)
 
 Shared utilities and core abstractions for the Investor-IQ ecosystem — a lightweight, stable, dependency-efficient library used by multiple services (agents, extraction services, etc.).
 

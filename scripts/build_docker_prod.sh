@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Unified Docker production build script for Innovation-Child services.
+# Unified Docker production build script for auslei services.
 # Intended to be invoked from a project root where a Dockerfile lives,
-# with ic_common added as a git submodule.
+# with as_common added as a git submodule.
 #
 # Usage:
-#   ./ic_common/scripts/build_docker_prod.sh IMAGE_TAG [OPTIONS]
+#   ./as_common/scripts/build_docker_prod.sh IMAGE_TAG [OPTIONS]
 #
 # Arguments:
-#   IMAGE_TAG             Docker image name and tag, e.g. ic_vectordb:latest (required)
+#   IMAGE_TAG             Docker image name and tag, e.g. as_vectordb:latest (required)
 #
 # Options:
 #   --multiplatform       Build for linux/amd64 AND linux/arm64.

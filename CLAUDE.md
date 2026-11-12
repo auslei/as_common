@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**ic-common** is a shared Python library (v0.1.0) providing core abstractions for the Investor-IQ ecosystem. It serves as a lightweight, stable, dependency-efficient foundation used by multiple microservices (agents, extraction services, etc.).
+**as-common** is a shared Python library (v0.1.0) providing core abstractions for the Investor-IQ ecosystem. It serves as a lightweight, stable, dependency-efficient foundation used by multiple microservices (agents, extraction services, etc.).
 
 **Key Domains:**
 - **Unified LLM Interface**: Multi-provider support (OpenAI, DeepSeek, Ollama, LlamaCpp, LM Studio)

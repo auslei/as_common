@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Sync ic_common source and dependencies to sibling ic_* projects.
+"""Sync as_common source and dependencies to sibling as_* projects.
 
-Scans ../ic_* directories. For each that contains a common/ subdirectory:
+Scans ../as_* directories. For each that contains a common/ subdirectory:
   1. Copies all .py files and MODULE_CONTEXT.md from src/common/ -> <project>/common/
-  2. Overwrites <project>/common/pyproject.toml with ic_common's pyproject.toml
-  3. Adds any ic_common dependencies missing from <project>/pyproject.toml
+  2. Overwrites <project>/common/pyproject.toml with as_common's pyproject.toml
+  3. Adds any as_common dependencies missing from <project>/pyproject.toml
 """
 
 import re
@@ -41,9 +41,9 @@ def sync_files(src_dir: Path, dst_dir: Path) -> int:
     return updated
 
 
-def sync_deps(ic_common_toml: Path, target_toml: Path) -> int:
-    """Append any ic_common deps missing from target pyproject.toml. Returns count added."""
-    with open(ic_common_toml, "rb") as f:
+def sync_deps(as_common_toml: Path, target_toml: Path) -> int:
+    """Append any as_common deps missing from target pyproject.toml. Returns count added."""
+    with open(as_common_toml, "rb") as f:
         src_data = tomllib.load(f)
     with open(target_toml, "rb") as f:
         dst_data = tomllib.load(f)
@@ -79,10 +79,10 @@ def sync_deps(ic_common_toml: Path, target_toml: Path) -> int:
     return len(missing)
 
 
-def sync_project(ic_common: Path, target: Path) -> None:
-    src_common = ic_common / "src" / "common"
+def sync_project(as_common: Path, target: Path) -> None:
+    src_common = as_common / "src" / "common"
     dst_common = target / "common"
-    ic_toml = ic_common / "pyproject.toml"
+    as_toml = as_common / "pyproject.toml"
 
     print(f"\n── {target.name}/")
 
@@ -92,38 +92,38 @@ def sync_project(ic_common: Path, target: Path) -> None:
         print("    files: up to date")
 
     # 2. Overwrite common/pyproject.toml (kept as a mirror for reference)
-    shutil.copy2(ic_toml, dst_common / "pyproject.toml")
+    shutil.copy2(as_toml, dst_common / "pyproject.toml")
 
     # 3. Merge missing deps into the project's main pyproject.toml
     target_toml = target / "pyproject.toml"
     if not target_toml.exists():
         print(f"    WARNING: {target.name}/pyproject.toml not found, skipping dep sync")
         return
-    n_deps = sync_deps(ic_toml, target_toml)
+    n_deps = sync_deps(as_toml, target_toml)
     if n_deps == 0:
         print("    deps: up to date")
 
 
 def main() -> None:
-    ic_common = Path(__file__).parent.resolve()
-    parent = ic_common.parent
+    as_common = Path(__file__).parent.resolve()
+    parent = as_common.parent
 
     targets = sorted([
         d for d in parent.iterdir()
         if d.is_dir()
-        and d.name.startswith("ic_")
-        and d.name != ic_common.name
+        and d.name.startswith("as_")
+        and d.name != as_common.name
         and (d / "common").is_dir()
     ])
 
     if not targets:
-        print("No sibling ic_* projects with a common/ directory found.")
+        print("No sibling as_* projects with a common/ directory found.")
         return
 
     print(f"Syncing to: {', '.join(t.name for t in targets)}")
 
     for target in targets:
-        sync_project(ic_common, target)
+        sync_project(as_common, target)
 
     print("\nDone. Run `uv sync` in each updated project to install new dependencies.")
 

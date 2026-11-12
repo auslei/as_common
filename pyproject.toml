@@ -1,7 +1,7 @@
 [project]
-name = "ic-common"
+name = "as-common"
 version = "0.1.0"
-description = "Common utilities and core abstractions for ic-projects"
+description = "Common utilities and core abstractions for as-projects"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -29,7 +29,7 @@ pdf = [
     "pypandoc>=1.13",
 ]
 all = [
-    "ic-common[ml,media,pdf]",
+    "as-common[ml,media,pdf]",
 ]
 
 [dependency-groups]
