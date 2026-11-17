@@ -34,6 +34,69 @@ uv run pytest tests/manual/    # integration tests (requires live LLM providers)
 uv run pytest --cov            # with coverage report
 ```
 
+## Usage
+
+### Unified LLM interface
+
+```python
+from common.unified_llm import UnifiedChatModel
+from pydantic import BaseModel
+
+class Result(BaseModel):
+    answer: str
+
+model = UnifiedChatModel(provider="ollama", model_name="qwen3:14b")
+
+response = model.invoke("What is 2+2?")                 # simple
+result = model.invoke("Extract key info", schema=Result)  # structured output
+reasoning = model.invoke(prompt, thinking=True)          # toggle reasoning per call
+```
+
+### Job queue (FastAPI)
+
+```python
+from common.job_queue import JobQueue
+from contextlib import asynccontextmanager
+
+job_queue = JobQueue("my_service")
+
+async def run_job(job):
+    if job.job_type == "process_file":
+        return await some_async_work(**job.request)
+    raise ValueError(f"Unknown job type: {job.job_type}")
+
+@asynccontextmanager
+async def lifespan(app):
+    await job_queue.start(run_job)
+    yield
+    await job_queue.stop()
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(job_queue.make_router())   # exposes /jobs, /jobs/{id}, DELETE
+```
+
+### Structured output parsing
+
+```python
+from common.pydantic_helper import build_structured_prompt, parse_structured_output
+
+schema_prompt = build_structured_prompt("Extract company info: [...]", CompanyInfo)
+response = model.invoke(schema_prompt)
+parsed = parse_structured_output(response.content, CompanyInfo, llm=model)  # repairs on failure
+```
+
+### Logging
+
+```python
+from common.logger import get_logger
+
+logger = get_logger("module_name", icon="🚀")
+logger.info("info message")
+logger.error("boom", exc_info=True)
+```
+
+Set `LOG__TO_FILE=true` to write to `logs/app_YYYYMMDD_HHMMSS.log`.
+
 ## Directory Structure
 
 ```
@@ -67,7 +130,7 @@ make lint      # ruff check
 make format    # black format
 ```
 
-Follows the standards in `GLOBAL_STANDARDS.md`. Always use `uv` for dependency management, type hints on all function signatures, and `get_logger()` from `logger.py` for logging.
+Conventions: always use `uv` for dependency management, type hints on all function signatures, and `get_logger()` from `logger.py` for logging. See `CLAUDE.md` for the full convention list.
 
 ## License
 
